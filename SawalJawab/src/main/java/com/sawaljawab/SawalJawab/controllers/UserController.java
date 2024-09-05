@@ -31,4 +31,22 @@ public class UserController {
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+
+    @PutMapping("/{userName}")
+    public ResponseEntity<User> editUserEntry(@RequestBody User user, @PathVariable String userName) {
+        User editedUser = userService.editUser(user, userName);
+        if (editedUser != null) {
+            return new ResponseEntity<>(editedUser, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @DeleteMapping("/{userName}")
+    public ResponseEntity<Boolean> deleteUserEntry(@PathVariable String userName) {
+        Boolean deleted = userService.deleteUser(userName);
+        if (deleted) {
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
 }

@@ -3,8 +3,10 @@ package com.sawaljawab.SawalJawab.service;
 import com.sawaljawab.SawalJawab.Dtos.UserDto;
 import com.sawaljawab.SawalJawab.Repositories.UserRepository;
 import com.sawaljawab.SawalJawab.entities.User;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +14,9 @@ import java.time.LocalDateTime;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     public UserDto findUser(String userName) {
         User foundUser = userRepository.findByUserName(userName);
@@ -37,5 +42,31 @@ public class UserService {
         userToSave.setUpdatedAt(LocalDateTime.now());
         User savedUser = userRepository.save(userToSave);
         return savedUser;
+    }
+
+    @Transactional
+    public User editUser(User userToEdit, String userName) {
+        UserDto userFound = findUser(userName);
+        if (userFound != null) {
+            User mappedUser = modelMapper.map(userFound, User.class);
+            mappedUser.setEmail(userToEdit.getEmail());
+            mappedUser.setPassword(userToEdit.getPassword());
+            mappedUser.setUpdatedAt(LocalDateTime.now());
+            if(userToEdit.getRole() != null) {
+                mappedUser.setRole(userToEdit.getRole());
+            }
+            User user = userRepository.save(mappedUser);
+            return user;
+        }
+        return null;
+    }
+
+    public Boolean deleteUser(String userName) {
+        UserDto userDto = findUser(userName);
+        if (userDto != null) {
+            userRepository.deleteByUserName(userName);
+            return true;
+        }
+        return false;
     }
 }
