@@ -55,6 +55,9 @@ public class UserService {
             if(userToEdit.getRole() != null) {
                 mappedUser.setRole(userToEdit.getRole());
             }
+            if(userToEdit.getQuestions() != null) {
+                mappedUser.setQuestions(userToEdit.getQuestions());
+            }
             User user = userRepository.save(mappedUser);
             return user;
         }
