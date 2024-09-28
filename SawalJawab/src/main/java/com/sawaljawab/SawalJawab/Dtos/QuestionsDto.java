@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 @Data
 public class QuestionsDto {
-    private ObjectId id;
     private String title;
     private String content;
     private List<String> tag;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String userName;
 }
