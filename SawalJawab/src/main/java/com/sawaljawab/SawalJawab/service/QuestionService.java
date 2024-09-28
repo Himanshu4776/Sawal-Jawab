@@ -44,14 +44,27 @@ public class QuestionService {
                 foundUser.setQuestions(questionsList);
             }
 //            userService.editUser(foundUser, username);
-            userRepository.save(foundUser);
+            userService.saveOlderUser(foundUser);
+//            userRepository.save(foundUser);
             return modelMapper.map(savedQuestion, QuestionsDto.class);
         }
         return null;
     }
 
+    public boolean saveQuestion(Questions questions) {
+        Questions saved = questionRepository.save(questions);
+        if (saved != null) {
+            return true;
+        }
+        return false;
+    }
+
     public QuestionsDto getQuestionOwner(ObjectId questionId) {
         Optional<Questions> question = questionRepository.findById(questionId);
         return question.map(questions -> modelMapper.map(questions, QuestionsDto.class)).orElse(null);
+    }
+
+    public Optional<Questions> getQuestion(ObjectId questionId) {
+        return questionRepository.findById(questionId);
     }
 }

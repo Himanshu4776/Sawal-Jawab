@@ -44,6 +44,10 @@ public class UserService {
         return savedUser;
     }
 
+    public void saveOlderUser(User user) {
+        userRepository.save(user);
+    }
+
     @Transactional
     public User editUser(User userToEdit, String userName) {
         UserDto userFound = findUser(userName);

@@ -1,8 +1,6 @@
-package com.sawaljawab.SawalJawab.constants;
+package com.sawaljawab.SawalJawab.controllers;
 
 import com.sawaljawab.SawalJawab.Dtos.QuestionsDto;
-import com.sawaljawab.SawalJawab.Dtos.UserDto;
-import com.sawaljawab.SawalJawab.entities.Questions;
 import com.sawaljawab.SawalJawab.service.QuestionService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;

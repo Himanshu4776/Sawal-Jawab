@@ -6,10 +6,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +16,7 @@ import java.util.List;
 @Entity
 public class Questions {
     @Id
+    @Column(name = "question_id")
     private ObjectId id;
     private String title;
     private String content;
@@ -28,6 +26,9 @@ public class Questions {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "username")
     private String userName;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "Questions", cascade = CascadeType.ALL)
+    private List<Answer> answer;
 
     public String getUserName() {
         return userName;
@@ -83,6 +84,14 @@ public class Questions {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<Answer> getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(List<Answer> answer) {
+        this.answer = answer;
     }
 
     @Override
