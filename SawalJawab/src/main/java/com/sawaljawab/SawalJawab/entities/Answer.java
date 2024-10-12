@@ -1,16 +1,12 @@
 package com.sawaljawab.SawalJawab.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -20,17 +16,24 @@ import java.time.LocalDateTime;
 @Setter
 public class Answer {
     @Id
-    private ObjectId id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long answerId;
+
     private String title;
+
     private String content;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "username")
-    private String userName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userName")
+    @JsonIgnore
+    private User user;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
-    private ObjectId questionId;
+    @JsonIgnore
+    private Questions question;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 }

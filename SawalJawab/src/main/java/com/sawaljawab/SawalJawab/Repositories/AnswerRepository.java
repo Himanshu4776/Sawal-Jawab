@@ -1,8 +1,7 @@
 package com.sawaljawab.SawalJawab.Repositories;
 
 import com.sawaljawab.SawalJawab.entities.Answer;
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AnswerRepository extends MongoRepository<Answer, ObjectId> {
+public interface AnswerRepository extends JpaRepository<Answer, Long> {
 }

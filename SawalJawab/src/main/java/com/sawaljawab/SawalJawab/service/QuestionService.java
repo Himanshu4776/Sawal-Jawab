@@ -1,20 +1,21 @@
 package com.sawaljawab.SawalJawab.service;
 
+import com.sawaljawab.SawalJawab.Dtos.CategoryDto;
 import com.sawaljawab.SawalJawab.Dtos.QuestionsDto;
-import com.sawaljawab.SawalJawab.Dtos.UserDto;
 import com.sawaljawab.SawalJawab.Repositories.QuestionRepository;
 import com.sawaljawab.SawalJawab.Repositories.UserRepository;
+import com.sawaljawab.SawalJawab.entities.Category;
 import com.sawaljawab.SawalJawab.entities.Questions;
 import com.sawaljawab.SawalJawab.entities.User;
-import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionService {
@@ -23,30 +24,39 @@ public class QuestionService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    ModelMapper modelMapper;
-
-    @Autowired UserService userService;
+    private ModelMapper modelMapper;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private UtilService utils;
 
     @Transactional
     public QuestionsDto saveQuestion(QuestionsDto questionsDto, String username) {
         User foundUser = userRepository.findByUserName(username);
-        if (foundUser!=null){
-            Questions question=modelMapper.map(questionsDto, Questions.class);
-            question.setUserName(username);
+        if (foundUser != null && utils.checkQuestionCompliance(questionsDto)) {
+            Questions question = modelMapper.map(questionsDto, Questions.class);
+            if (question.getCategory() != null) {
+                Category foundCategory = categoryService.getCategoryFromName(question.getCategory().getCategoryName());
+                // Set the relationship
+                if(foundCategory == null) {
+                    // make a category
+                    CategoryDto categoryDto = new CategoryDto();
+                    categoryDto.setCategoryName(question.getCategory().getCategoryName());
+                    Category addedCategory = categoryService.addCategory(categoryDto);
+                    question.setCategory(addedCategory);
+                } else {
+                    question.setCategory(foundCategory);
+                }
+            }
+            question.setUser(foundUser);
+
             question.setCreatedAt(LocalDateTime.now());
             question.setUpdatedAt(LocalDateTime.now());
-            Questions savedQuestion = questionRepository.save(question);
-            if(foundUser.getQuestions() != null) {
-                foundUser.getQuestions().add(savedQuestion);
-            } else {
-                ArrayList<Questions> questionsList = new ArrayList<>();
-                questionsList.add(savedQuestion);
-                foundUser.setQuestions(questionsList);
-            }
-//            userService.editUser(foundUser, username);
-            userService.saveOlderUser(foundUser);
-//            userRepository.save(foundUser);
-            return modelMapper.map(savedQuestion, QuestionsDto.class);
+
+            Questions saved = questionRepository.save(question);
+            return modelMapper.map(saved, QuestionsDto.class);
         }
         return null;
     }
@@ -59,12 +69,31 @@ public class QuestionService {
         return false;
     }
 
-    public QuestionsDto getQuestionOwner(ObjectId questionId) {
+    @Transactional(readOnly = true)
+    public QuestionsDto getQuestionOwner(Long questionId) {
         Optional<Questions> question = questionRepository.findById(questionId);
         return question.map(questions -> modelMapper.map(questions, QuestionsDto.class)).orElse(null);
     }
 
-    public Optional<Questions> getQuestion(ObjectId questionId) {
+    public Optional<Questions> getQuestion(Long questionId) {
         return questionRepository.findById(questionId);
+    }
+
+    public List<QuestionsDto> getAllQuestions() {
+        List<Questions> questionsList = questionRepository.findAll();
+
+        return questionsList.stream()
+                .map(q -> modelMapper.map(q, QuestionsDto.class))
+                .collect(Collectors.toList());
+    }
+
+    public List<QuestionsDto> getUserAllQuestions(String username) {
+        User foundUser = userRepository.findByUserName(username);
+        if (foundUser != null) {
+            return foundUser.getQuestions().stream()
+                    .map(q -> modelMapper.map(q, QuestionsDto.class))
+                    .toList();
+        }
+        return null;
     }
 }

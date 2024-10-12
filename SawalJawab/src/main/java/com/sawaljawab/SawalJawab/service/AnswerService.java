@@ -4,14 +4,13 @@ import com.sawaljawab.SawalJawab.Dtos.UserDto;
 import com.sawaljawab.SawalJawab.Repositories.AnswerRepository;
 import com.sawaljawab.SawalJawab.entities.Answer;
 import com.sawaljawab.SawalJawab.entities.Questions;
-import org.bson.types.ObjectId;
+import com.sawaljawab.SawalJawab.entities.User;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,30 +21,28 @@ public class AnswerService {
     private UserService userService;
     @Autowired
     private QuestionService questionService;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Transactional
-    public Answer saveAnswer(Answer answer, ObjectId questionId, String username) {
-        UserDto foundUser = userService.findUser(username);
+    public Answer saveAnswer(Answer answer, Long questionId, String username) {
+        User foundUser = userService.getOlderUser(username);
         if (foundUser != null) {
             Optional<Questions> question = questionService.getQuestion(questionId);
             if (question.isPresent()) {
                 answer.setCreatedAt(LocalDateTime.now());
                 answer.setUpdatedAt(LocalDateTime.now());
-                answer.setUserName(username);
-                answer.setQuestionId(questionId);
+                answer.setUser(foundUser);
+                answer.setQuestion(question.get());
+
                 Answer savedAnswer = answerRepository.save(answer);
-                // save in upper entities like Question and User:
-                if (question.get().getAnswer() != null) {
-                    question.get().getAnswer().add(answer);
-                } else {
-                    List<Answer> answers = new ArrayList<>();
-                    answers.add(savedAnswer);
-                    question.get().setAnswer(answers);
-                }
-                questionService.saveQuestion(question.get());
                 return savedAnswer;
             }
         }
         return null;
+    }
+
+    public Optional<Answer> getAnswer(Long answerId) {
+        return answerRepository.findById(answerId);
     }
 }
