@@ -1,12 +1,17 @@
 package com.sawaljawab.SawalJawab.controllers;
 
+import com.sawaljawab.SawalJawab.Dtos.AnswerDto;
+import com.sawaljawab.SawalJawab.Dtos.QuestionsDto;
 import com.sawaljawab.SawalJawab.Dtos.UserDto;
+import com.sawaljawab.SawalJawab.entities.Answer;
 import com.sawaljawab.SawalJawab.entities.User;
 import com.sawaljawab.SawalJawab.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -48,5 +53,23 @@ public class UserController {
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/{userName}/answers")
+    public ResponseEntity<List<AnswerDto>> getUserAnswers(@PathVariable String userName) {
+        List<AnswerDto> answers = userService.getAnswers(userName);
+        if (!answers.isEmpty()) {
+            return new ResponseEntity<>(answers, HttpStatus.FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/{userName}/questions")
+    public ResponseEntity<List<QuestionsDto>> getUserQuestions(@PathVariable String userName) {
+        List<QuestionsDto> questions = userService.getQuestions(userName);
+        if (!questions.isEmpty()) {
+            return new ResponseEntity<>(questions, HttpStatus.FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
