@@ -6,6 +6,7 @@ import com.sawaljawab.SawalJawab.Dtos.UserDto;
 import com.sawaljawab.SawalJawab.entities.Answer;
 import com.sawaljawab.SawalJawab.entities.User;
 import com.sawaljawab.SawalJawab.service.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,8 @@ import java.util.List;
 public class UserController {
     @Autowired
     UserService userService;
+    @Autowired
+    ModelMapper modelMapper;
 
     @GetMapping("/{userName}")
     public ResponseEntity<UserDto> getUser(@PathVariable String userName) {
@@ -29,21 +32,23 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> saveUserEntry(@RequestBody User user) {
+    public ResponseEntity<UserDto> saveUserEntry(@RequestBody User user) {
         User savedUser = userService.saveUser(user);
         if (savedUser != null) {
-            return new ResponseEntity<>(user, HttpStatus.CREATED);
+            UserDto userDto = modelMapper.map(savedUser, UserDto.class);
+            return new ResponseEntity<>(userDto, HttpStatus.CREATED);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/{userName}")
-    public ResponseEntity<User> editUserEntry(@RequestBody User user, @PathVariable String userName) {
+    public ResponseEntity<UserDto> editUserEntry(@RequestBody User user, @PathVariable String userName) {
         User editedUser = userService.editUser(user, userName);
         if (editedUser != null) {
-            return new ResponseEntity<>(editedUser, HttpStatus.OK);
+            UserDto userDto = modelMapper.map(editedUser, UserDto.class);
+            return new ResponseEntity<UserDto>(userDto, HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<UserDto>(HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping("/{userName}")

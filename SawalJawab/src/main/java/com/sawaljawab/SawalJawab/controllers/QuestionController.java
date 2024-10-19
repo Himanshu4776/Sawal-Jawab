@@ -18,9 +18,9 @@ public class QuestionController {
     private QuestionService questionService;
 
     @PostMapping("/save/{username}")
-    public QuestionsDto createQuestion(@RequestBody QuestionsDto questionsDto, @PathVariable String username){
+    public ResponseEntity<QuestionsDto> createQuestion(@RequestBody QuestionsDto questionsDto, @PathVariable String username){
         QuestionsDto saved = questionService.saveQuestion(questionsDto,username);
-        return saved;
+        return new ResponseEntity<QuestionsDto>(saved, HttpStatus.CREATED);
     }
 
     @GetMapping("/id/{id}")
