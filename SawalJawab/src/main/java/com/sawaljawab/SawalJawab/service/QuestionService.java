@@ -7,6 +7,7 @@ import com.sawaljawab.SawalJawab.Repositories.UserRepository;
 import com.sawaljawab.SawalJawab.entities.Category;
 import com.sawaljawab.SawalJawab.entities.Questions;
 import com.sawaljawab.SawalJawab.entities.User;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class QuestionService {
     @Autowired
@@ -41,7 +43,9 @@ public class QuestionService {
                 Category foundCategory = categoryService.getCategoryFromName(question.getCategory().getCategoryName());
                 // Set the relationship
                 if(foundCategory == null) {
+                    log.info("category not found with category name: {}", question.getCategory().getCategoryName());
                     // make a category
+                    log.debug("creating a new category name: {}", question.getCategory().getCategoryName());
                     CategoryDto categoryDto = new CategoryDto();
                     categoryDto.setCategoryName(question.getCategory().getCategoryName());
                     Category addedCategory = categoryService.addCategory(categoryDto);
@@ -58,6 +62,7 @@ public class QuestionService {
             Questions saved = questionRepository.save(question);
             return modelMapper.map(saved, QuestionsDto.class);
         }
+        log.warn("No user found with username {}", username);
         return null;
     }
 
@@ -66,11 +71,13 @@ public class QuestionService {
         if (saved != null) {
             return true;
         }
+        log.warn("Error while saving question: {}", questions);
         return false;
     }
 
     @Transactional(readOnly = true)
     public QuestionsDto getQuestionOwner(Long questionId) {
+
         Optional<Questions> question = questionRepository.findById(questionId);
         return question.map(questions -> modelMapper.map(questions, QuestionsDto.class)).orElse(null);
     }
@@ -94,6 +101,7 @@ public class QuestionService {
                     .map(q -> modelMapper.map(q, QuestionsDto.class))
                     .toList();
         }
+        log.warn("No user found with username {}", username);
         return null;
     }
 }

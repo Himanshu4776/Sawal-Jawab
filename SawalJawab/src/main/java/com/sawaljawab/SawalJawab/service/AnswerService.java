@@ -5,6 +5,7 @@ import com.sawaljawab.SawalJawab.Repositories.AnswerRepository;
 import com.sawaljawab.SawalJawab.entities.Answer;
 import com.sawaljawab.SawalJawab.entities.Questions;
 import com.sawaljawab.SawalJawab.entities.User;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class AnswerService {
     @Autowired
@@ -38,7 +40,9 @@ public class AnswerService {
                 Answer savedAnswer = answerRepository.save(answer);
                 return savedAnswer;
             }
+            log.warn("No question present with question_id {}", questionId);
         }
+        log.warn("No user found with username {}", username);
         return null;
     }
 
