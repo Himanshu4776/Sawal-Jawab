@@ -3,6 +3,7 @@ package com.sawaljawab.SawalJawab.Security;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -27,5 +28,9 @@ public class JWTService {
 
     public String extractUserName(String token) {
         return null;
+    }
+
+    public boolean validateToken(String token, UserDetails userDetails) {
+        return true;
     }
 }
