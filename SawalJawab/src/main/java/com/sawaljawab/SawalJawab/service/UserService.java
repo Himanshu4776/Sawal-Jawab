@@ -4,11 +4,16 @@ import com.sawaljawab.SawalJawab.Dtos.AnswerDto;
 import com.sawaljawab.SawalJawab.Dtos.QuestionsDto;
 import com.sawaljawab.SawalJawab.Dtos.UserDto;
 import com.sawaljawab.SawalJawab.Repositories.UserRepository;
+import com.sawaljawab.SawalJawab.Security.JWTService;
 import com.sawaljawab.SawalJawab.entities.Answer;
 import com.sawaljawab.SawalJawab.entities.User;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +25,19 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     @Autowired
+    private AuthenticationManager authManager;
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private JWTService jwtService;
 
     @Autowired
     private UtilService utils;
+
+    private BCryptPasswordEncoder encoder= new BCryptPasswordEncoder(12);
 
     public UserDto findUser(String userName) {
         User foundUser = userRepository.findByUserName(userName);
@@ -45,6 +56,7 @@ public class UserService {
         if(userToSave.getRole() == null) {
             userToSave.setRole("user");
         }
+        userToSave.setPassword(encoder.encode(userToSave.getPassword()));
         userToSave.setCreatedAt(LocalDateTime.now());
         userToSave.setUpdatedAt(LocalDateTime.now());
         User savedUser = userRepository.save(userToSave);
@@ -115,5 +127,14 @@ public class UserService {
         }
         log.warn("No user found with username {}", userName);
         return null;
+    }
+
+    public String verify(UserDto userDto) {
+
+        Authentication authentication=
+                authManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getUserName(),userDto.getPassword()));
+        if (authentication.isAuthenticated())
+            return jwtService.generateToken(userDto.getUserName());
+        return "fail";
     }
 }

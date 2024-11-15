@@ -13,7 +13,7 @@ public class UtilService {
         if (userDto.getPassword().isEmpty() || userDto.getPassword().isBlank()) {
             return false;
         }
-        if (userDto.getUserName().isBlank() || userDto.getUserName().isEmpty()) {
+        if (userDto.getUsername().isBlank() || userDto.getUsername().isEmpty()) {
             return false;
         }
         return  true;

@@ -31,7 +31,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<UserDto> saveUserEntry(@RequestBody User user) {
         User savedUser = userService.saveUser(user);
         if (savedUser != null) {
@@ -76,5 +76,9 @@ public class UserController {
             return new ResponseEntity<>(questions, HttpStatus.FOUND);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    @PostMapping("/login")
+    public String login(@RequestBody UserDto userDto){
+        return userService.verify(userDto);
     }
 }
