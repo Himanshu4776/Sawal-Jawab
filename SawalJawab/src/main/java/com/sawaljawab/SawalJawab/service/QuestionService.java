@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -103,5 +104,12 @@ public class QuestionService {
         }
         log.warn("No user found with username {}", username);
         return null;
+    }
+
+    public List<QuestionsDto> getSearchedQuestion(String questionString) {
+        List<Questions> questions = questionRepository.searchProducts(questionString);
+        List<QuestionsDto> list = questions.stream().map(q -> modelMapper.map(q, QuestionsDto.class))
+                .collect(Collectors.toList());
+        return list;
     }
 }

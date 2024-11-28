@@ -42,4 +42,10 @@ public class QuestionController {
         Logger.getLogger("No Question found");
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    @GetMapping
+    public ResponseEntity<List<QuestionsDto>> getSearchedQuestion(@PathVariable String filterString) {
+        List<QuestionsDto> searchedQuestion = questionService.getSearchedQuestion(filterString);
+        return new ResponseEntity<>(searchedQuestion, HttpStatus.OK);
+    }
 }
