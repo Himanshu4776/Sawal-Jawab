@@ -1,10 +1,10 @@
-import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Link, MessageCircle, ThumbsUp, User } from 'lucide-react';
-import { Answer } from './Answer';
-import { AnswerForm } from './AnswerForm';
-import { badgeVariants } from '@/components/ui/badge';
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Link, MessageCircle, ThumbsUp, User } from "lucide-react";
+import { Answer } from "./Answer";
+import { AnswerForm } from "./AnswerForm";
+import { badgeVariants } from "@/components/ui/badge";
 
 interface AnswerType {
   id: number;
@@ -16,6 +16,7 @@ interface AnswerType {
 
 interface QuestionType {
   id: number;
+  title: string;
   author: string;
   timestamp: string;
   text: string;
@@ -51,13 +52,16 @@ export const Question: React.FC<QuestionProps> = ({
               <span className="text-sm text-gray-500">
                 • {question.timestamp}
               </span>
-              <div className="px-4">
+              {/* <div className="px-8">
                 <Link className={badgeVariants({ variant: 'outline' })}>
-                  Badge
+                  Badge fot
                 </Link>
-              </div>
+              </div> */}
             </div>
-            <h3 className="text-lg font-semibold mb-2">{question.text}</h3>
+            <div>
+              <h2 className="text-2xl font-bold mb-2">{question.title}</h2>
+              <p className="mb-4">{question.text}</p>
+            </div>
             <div className="flex items-center gap-4 text-sm text-gray-500">
               <Button
                 variant="ghost"
@@ -90,7 +94,9 @@ export const Question: React.FC<QuestionProps> = ({
           <AnswerForm questionId={question.id} addAnswer={addAnswer} />
         )}
 
-        <div className="mt-4 space-y-4">
+        <div className="ml-8 space-y-4">
+          {" "}
+          {/* Add margin-left for indentation */}
           {question.answers.map((answer) => (
             <Answer
               key={answer.id}

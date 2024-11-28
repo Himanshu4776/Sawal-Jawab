@@ -21,7 +21,7 @@ export const Answer: React.FC<AnswerProps> = ({
   questionId,
 }) => {
   return (
-    <div className="border-t pt-4">
+    <div className="border-l-2 border-gray-200 pl-4 pt-4">
       <div className="flex items-center gap-2 mb-2">
         <User className="w-4 h-4" />
         <span className="text-sm text-gray-500">{answer.author}</span>

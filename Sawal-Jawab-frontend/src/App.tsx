@@ -23,6 +23,7 @@ interface Answer {
 
 interface QuestionData {
   id: number;
+  title: string;
   text: string;
   answers: Answer[];
   votes: number;
@@ -32,7 +33,11 @@ interface QuestionData {
 
 export default function App() {
   const [questions, setQuestions] = useState<QuestionData[]>([]);
-  const [newQuestion, setNewQuestion] = useState<string>('');
+  // const [newQuestion, setNewQuestion] = useState<string>('');
+  const [newQuestion, setNewQuestion] = useState<{title: string; text: string}>({
+    title: '',
+    text: ''
+  })
   const [showAnswerInput, setShowAnswerInput] = useState<{
     [key: number]: boolean;
   }>({});
@@ -124,23 +129,43 @@ export default function App() {
     };
   }
 
+  // const addQuestion = () => {
+  //   if (!currentUser) {
+  //     setShowLoginModal(true);
+  //     return;
+  //   }
+
+  //   if (newQuestion.trim()) {
+  //     const question: QuestionData = {
+  //       id: Date.now(),
+  //       text: newQuestion,
+  //       answers: [],
+  //       votes: 0,
+  //       author: currentUser.username,
+  //       timestamp: new Date().toLocaleString(),
+  //     };
+  //     setQuestions([question, ...questions]);
+  //     setNewQuestion('');
+  //   }
+  // };
   const addQuestion = () => {
     if (!currentUser) {
       setShowLoginModal(true);
       return;
     }
-
-    if (newQuestion.trim()) {
+  
+    if (newQuestion.title.trim() && newQuestion.text.trim()) {
       const question: QuestionData = {
         id: Date.now(),
-        text: newQuestion,
+        title: newQuestion.title,
+        text: newQuestion.text,
         answers: [],
         votes: 0,
         author: currentUser.username,
         timestamp: new Date().toLocaleString(),
       };
       setQuestions([question, ...questions]);
-      setNewQuestion('');
+      setNewQuestion({ title: '', text: '' });
     }
   };
 
