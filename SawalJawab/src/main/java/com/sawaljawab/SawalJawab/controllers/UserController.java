@@ -1,8 +1,10 @@
 package com.sawaljawab.SawalJawab.controllers;
 
 import com.sawaljawab.SawalJawab.Dtos.AnswerDto;
+import com.sawaljawab.SawalJawab.Dtos.AuthRequest;
 import com.sawaljawab.SawalJawab.Dtos.QuestionsDto;
 import com.sawaljawab.SawalJawab.Dtos.UserDto;
+import com.sawaljawab.SawalJawab.Security.JWTService;
 import com.sawaljawab.SawalJawab.entities.Answer;
 import com.sawaljawab.SawalJawab.entities.User;
 import com.sawaljawab.SawalJawab.service.UserService;
@@ -10,6 +12,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +27,10 @@ public class UserController {
     UserService userService;
     @Autowired
     ModelMapper modelMapper;
+    @Autowired
+    JWTService jwtService;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @GetMapping("/{userName}")
     public ResponseEntity<UserDto> getUser(@PathVariable String userName) {
@@ -80,5 +90,17 @@ public class UserController {
     @PostMapping("/login")
     public String login(@RequestBody UserDto userDto){
         return userService.verify(userDto);
+    }
+
+    @PostMapping("/generateToken")
+    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+        );
+        if (authentication.isAuthenticated()) {
+            return jwtService.generateToken(authRequest.getUsername());
+        } else {
+            throw new UsernameNotFoundException("Invalid user request!");
+        }
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -25,27 +26,28 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
-@EnableWebMvc
 public class SecurityConfig {
+    
     @Autowired
-    private JwtFilter jwtFilter;
+    private JwtAuthFilter jwtFilter;
+
     @Autowired
     private CustomUserDetailService customUserDetailService;
-    //Telusko
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(customiezer ->customiezer.disable())
                 .authorizeHttpRequests(request ->request
-                        .requestMatchers("user/register","user/login")
-                        .permitAll().anyRequest().authenticated())
-//                .formLogin(Customizer.withDefaults())
+                        .requestMatchers("user/register","user/login","user/generateToken").permitAll()
+                        .requestMatchers("/user/**").hasAuthority("user")
+                        .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session ->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
     @Bean
     public UserDetailsService userDetailsService(){
         UserDetails user1= User
@@ -62,16 +64,23 @@ public class SecurityConfig {
                 build();
         return new InMemoryUserDetailsManager(user1,user2);
     }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(); // Password encoding
+    }
+
     @Bean
     public AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider provider=new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+        provider.setPasswordEncoder(passwordEncoder());
+//        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
         provider.setUserDetailsService(customUserDetailService);
         return provider;
     }
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
 }
