@@ -69,10 +69,10 @@ public class UserService {
 
     public void saveOlderUser(User user) {
         try {
-            userRepository.save(user);  // This is where the exception likely occurs
+            userRepository.save(user);
         } catch (Exception e) {
             log.error("Exception occurred during save of user {} with error: {}", user, e.getMessage(), e);
-            throw e;  // Rethrow after logging
+            throw e;
         }
     }
 

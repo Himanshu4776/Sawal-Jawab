@@ -43,20 +43,18 @@ public class User implements UserDetails {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private List<Answer> answers;
 
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        List<SimpleGrantedAuthority> authorities = this.roles.stream().map((role) -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
-//        return authorities;
-//    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        // Return a default authority based on the user's role
+        if (this.role != null || this.role.equals("user")) {
+            return List.of(new SimpleGrantedAuthority(this.role));
+        }
+        return List.of(new SimpleGrantedAuthority("ROLE_USER")); // Default role
     }
 
     @Override
     public String getUsername() {
-        return this.email;
+        return this.userName; // Use userName instead of email
     }
 
     @Override

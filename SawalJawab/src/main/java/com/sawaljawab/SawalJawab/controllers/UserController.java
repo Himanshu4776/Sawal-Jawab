@@ -12,9 +12,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,9 +53,10 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @PutMapping("/{userName}")
-    public ResponseEntity<UserDto> editUserEntry(@RequestBody User user, @PathVariable String userName) {
-        User editedUser = userService.editUser(user, userName);
+    @PutMapping
+    public ResponseEntity<UserDto> editUserEntry(@RequestBody User user) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User editedUser = userService.editUser(user, username);
         if (editedUser != null) {
             UserDto userDto = modelMapper.map(editedUser, UserDto.class);
             return new ResponseEntity<UserDto>(userDto, HttpStatus.OK);
@@ -61,8 +64,9 @@ public class UserController {
         return new ResponseEntity<UserDto>(HttpStatus.BAD_REQUEST);
     }
 
-    @DeleteMapping("/{userName}")
-    public ResponseEntity<Boolean> deleteUserEntry(@PathVariable String userName) {
+    @DeleteMapping
+    public ResponseEntity<Boolean> deleteUserEntry() {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         Boolean deleted = userService.deleteUser(userName);
         if (deleted) {
             return new ResponseEntity<>(true, HttpStatus.OK);
@@ -70,8 +74,10 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping("/{userName}/answers")
-    public ResponseEntity<List<AnswerDto>> getUserAnswers(@PathVariable String userName) {
+    @GetMapping("/answers")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<List<AnswerDto>> getUserAnswers() {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         List<AnswerDto> answers = userService.getAnswers(userName);
         if (!answers.isEmpty()) {
             return new ResponseEntity<>(answers, HttpStatus.FOUND);
@@ -79,14 +85,17 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/{userName}/questions")
-    public ResponseEntity<List<QuestionsDto>> getUserQuestions(@PathVariable String userName) {
+    @GetMapping("/questions")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<List<QuestionsDto>> getUserQuestions() {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         List<QuestionsDto> questions = userService.getQuestions(userName);
         if (!questions.isEmpty()) {
             return new ResponseEntity<>(questions, HttpStatus.FOUND);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
     @PostMapping("/login")
     public String login(@RequestBody UserDto userDto){
         return userService.verify(userDto);

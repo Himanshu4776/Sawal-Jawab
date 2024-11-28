@@ -26,10 +26,6 @@ public class UtilService {
         if (questionsDto.getContent().isEmpty() || questionsDto.getContent().isBlank()) {
             return false;
         }
-//        if (questionsDto.getCategoryName() != null && questionsDto.getCategoryName().isBlank()
-//                && questionsDto.getCategoryName().contains("@/,.123456789][()_-!") || !questionsDto.getCategoryName().isEmpty()) {
-//            return false;
-//        }
         return true;
     }
 }
