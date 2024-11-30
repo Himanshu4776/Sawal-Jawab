@@ -9,6 +9,7 @@ import { Footer } from './components/Footer';
 import { NoResults } from './components/NoResults';
 import { useRegister } from './hooks/useRegister';
 import { LoginData, QuestionData, RegisterData, User } from './hooks/types';
+import { Toaster } from './components/ui/toaster';
 
 export default function App() {
   const [questions, setQuestions] = useState<QuestionData[]>([]);
@@ -211,6 +212,7 @@ export default function App() {
           {filteredQuestions.length == 0 && questions.length == 0 && <div className='space-y-4'><NoResults /></div>}
 
         </main>
+        <Toaster />
       </div>
       <Footer />
     </div>

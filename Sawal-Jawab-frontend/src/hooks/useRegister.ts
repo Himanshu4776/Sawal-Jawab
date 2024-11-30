@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { RegisterData, RegisterResponse } from './types';
-import { useToast } from "./use-toast";
-
-
+import { useToast } from "../hooks/use-toast";
 
 export const useRegister = () => {
   const [isLoading, setIsLoading] = useState(false);

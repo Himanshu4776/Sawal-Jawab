@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useToast } from "./use-toast";
+import { useToast } from "../hooks/use-toast";
 import { LoginData } from './types';
 
 interface LoginResponse {
