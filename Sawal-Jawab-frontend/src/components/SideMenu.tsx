@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
+import { User } from "../hooks/types";
 
 interface SideMenuProps {
-  currentUser: {
-    username: string;
-    email: string;
-  } | null;
+  currentUser: User | null;
   handleLogout: () => void;
   filterQuestions: (filter: string) => void;
-  filterTrendingQuestions: (filter: string) => 'MouseEventHandler<HTMLButtonElement> | undefined';
+  filterTrendingQuestions: (filter: string) => React.MouseEventHandler<HTMLButtonElement>;
 }
+
 
 export const SideMenu: React.FC<SideMenuProps> = ({ 
   currentUser, 

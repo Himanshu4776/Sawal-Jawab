@@ -3,10 +3,28 @@ import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import Login from './Login';
 import Register from './Register';
+import { RegisterData } from '@/hooks/types';
 
 interface User {
   username: string;
 }
+
+// interface HeaderProps {
+//   currentUser: User | null;
+//   handleLogout: () => void;
+//   showLoginModal: boolean;
+//   setShowLoginModal: (show: boolean) => void;
+//   showRegisterModal: boolean;
+//   setShowRegisterModal: (show: boolean) => void;
+//   loginData: { [key: string]: string };
+//   setLoginData: (data: { [key: string]: string }) => void;
+//   registerData: { [key: string]: string };
+//   setRegisterData: (data: { [key: string]: string }) => void;
+//   handleLogin: () => void;
+//   handleRegister: () => void;
+//   loginError: string | null;
+//   registerError: string | null;
+// }
 
 interface HeaderProps {
   currentUser: User | null;
@@ -15,15 +33,16 @@ interface HeaderProps {
   setShowLoginModal: (show: boolean) => void;
   showRegisterModal: boolean;
   setShowRegisterModal: (show: boolean) => void;
-  loginData: { [key: string]: string };
-  setLoginData: (data: { [key: string]: string }) => void;
-  registerData: { [key: string]: string };
-  setRegisterData: (data: { [key: string]: string }) => void;
+  loginData: { email: string; password: string };
+  setLoginData: React.Dispatch<React.SetStateAction<{ email: string; password: string }>>;
+  registerData: RegisterData;
+  setRegisterData: React.Dispatch<React.SetStateAction<RegisterData>>;
   handleLogin: () => void;
   handleRegister: () => void;
   loginError: string | null;
-  registerError: string | null;
+  registerError?: string;
 }
+
 
 export const Header: React.FC<HeaderProps> = ({
   currentUser,

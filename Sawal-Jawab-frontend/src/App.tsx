@@ -7,33 +7,11 @@ import 'tailwindcss/tailwind.css';
 import { SideMenu } from './components/SideMenu';
 import { Footer } from './components/Footer';
 import { NoResults } from './components/NoResults';
-
-interface User {
-  username: string;
-  email: string;
-}
-
-interface Answer {
-  id: number;
-  text: string;
-  votes: number;
-  author: string;
-  timestamp: string;
-}
-
-interface QuestionData {
-  id: number;
-  title: string;
-  text: string;
-  answers: Answer[];
-  votes: number;
-  author: string;
-  timestamp: string;
-}
+import { useRegister } from './hooks/useRegister';
+import { LoginData, QuestionData, RegisterData, User } from './hooks/types';
 
 export default function App() {
   const [questions, setQuestions] = useState<QuestionData[]>([]);
-  // const [newQuestion, setNewQuestion] = useState<string>('');
   const [newQuestion, setNewQuestion] = useState<{title: string; text: string}>({
     title: '',
     text: ''
@@ -42,21 +20,14 @@ export default function App() {
     [key: number]: boolean;
   }>({});
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [loginData, setLoginData] = useState<{
-    email: string;
-    password: string;
-  }>({ email: '', password: '' });
-  const [registerData, setRegisterData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
+  const [loginData, setLoginData] = useState<LoginData>({ email: '', password: '' });
+  const [registerData, setRegisterData] = useState<RegisterData>({username: '',email: '',password: '',confirmPassword: ''});
   const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
   const [showRegisterModal, setShowRegisterModal] = useState<boolean>(false);
   const [loginError, setLoginError] = useState<string>('');
   const [registerError, setRegisterError] = useState<string>('');
   const [filteredQuestions, setFilteredQuestions] = useState<QuestionData[]>([]);
+  const { handleRegister: handleRegisterSubmit } = useRegister();
 
   const handleLogin = () => {
     setLoginError('');
@@ -73,30 +44,12 @@ export default function App() {
   };
 
   const handleRegister = () => {
-    setRegisterError('');
-    if (
-      !registerData.username ||
-      !registerData.email ||
-      !registerData.password
-    ) {
-      setRegisterError('Please fill in all fields');
-      return;
-    }
-    if (registerData.password !== registerData.confirmPassword) {
-      setRegisterError('Passwords do not match');
-      return;
-    }
-    setCurrentUser({
-      username: registerData.username,
-      email: registerData.email,
-    });
-    setShowRegisterModal(false);
-    setRegisterData({
-      username: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-    });
+    handleRegisterSubmit(
+      registerData,
+      setShowRegisterModal,
+      setRegisterData,
+      setRegisterError
+    );
   };
 
   const handleLogout = () => {
@@ -129,25 +82,6 @@ export default function App() {
     };
   }
 
-  // const addQuestion = () => {
-  //   if (!currentUser) {
-  //     setShowLoginModal(true);
-  //     return;
-  //   }
-
-  //   if (newQuestion.trim()) {
-  //     const question: QuestionData = {
-  //       id: Date.now(),
-  //       text: newQuestion,
-  //       answers: [],
-  //       votes: 0,
-  //       author: currentUser.username,
-  //       timestamp: new Date().toLocaleString(),
-  //     };
-  //     setQuestions([question, ...questions]);
-  //     setNewQuestion('');
-  //   }
-  // };
   const addQuestion = () => {
     if (!currentUser) {
       setShowLoginModal(true);
@@ -254,9 +188,7 @@ export default function App() {
         />
 
         {/* Main Content Area */}
-        <main className="flex-1 px-4 w-full space-y-6 overflow-y-auto flex-1">
-          {/* <main className="flex-1 max-w-3xl w-full mx-auto py-4 space-y-6 overflow-y-auto"> */}
-
+        <main className="flex-1 px-4 w-full space-y-6 overflow-y-auto">
           <QuestionForm
             newQuestion={newQuestion}
             setNewQuestion={setNewQuestion}
