@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Header } from './components/Header';
 import { QuestionForm } from './components/QuestionForm';
 import { Question } from './components/Question';
@@ -11,6 +11,8 @@ import { useRegister } from './hooks/useRegister';
 import { LoginData, QuestionData, RegisterData, User } from './hooks/types';
 import { Toaster } from './components/ui/toaster';
 import { useLogin } from './hooks/useLogin';
+import { useQuestions } from './hooks/useQuestions';
+import { useAddQuestion } from './hooks/useAddQuestion';
 
 export default function App() {
   const [questions, setQuestions] = useState<QuestionData[]>([]);
@@ -32,6 +34,12 @@ export default function App() {
 
   const { handleRegister: handleRegisterSubmit } = useRegister();
   const { handleLoginSubmit: handleLoginSubmit } = useLogin();
+  const { fetchQuestions } = useQuestions();
+  const { addQuestion } = useAddQuestion();
+
+  useEffect(() => {
+    fetchQuestions(setQuestions);
+  }, []);
 
   const handleLogin = () => {
     handleLoginSubmit(
@@ -88,24 +96,15 @@ export default function App() {
     };
   }
 
-  const addQuestion = () => {
-    if (!currentUser) {
-      setShowLoginModal(true);
-      return;
-    }
-  
-    if (newQuestion.title.trim() && newQuestion.text.trim()) {
-      const question: QuestionData = {
-        id: Date.now(),
-        title: newQuestion.title,
-        text: newQuestion.text,
-        answers: [],
-        votes: 0,
-        author: currentUser.username,
-        timestamp: new Date().toLocaleString(),
-      };
-      setQuestions([question, ...questions]);
-      setNewQuestion({ title: '', text: '' });
+  const handleAddQuestion = async () => {
+    const result = await addQuestion({
+      title: newQuestion.title,
+      content: newQuestion.text
+    });
+    
+    if (result.success) {
+      // Refresh questions list or update state
+      fetchQuestions(setQuestions);
     }
   };
 
@@ -191,15 +190,12 @@ export default function App() {
           filterQuestions={filterQuestions}
           filterTrendingQuestions={filterTrendingQuestions}
         />
-
-        {/* Main Content Area */}
         <main className="flex-1 px-4 w-full space-y-6 overflow-y-auto">
           <QuestionForm
             newQuestion={newQuestion}
             setNewQuestion={setNewQuestion}
-            addQuestion={addQuestion}
+            addQuestion={handleAddQuestion}
           />
-
           <div className="space-y-4">
             {(filteredQuestions.length > 0 ? filteredQuestions : questions).map((question) => (
               <Question

@@ -19,7 +19,7 @@ public class QuestionController {
     @Autowired
     private QuestionService questionService;
 
-    @PostMapping("/save/{username}")
+    @PostMapping("/save")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<QuestionsDto> createQuestion(@RequestBody QuestionsDto questionsDto){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -40,11 +40,11 @@ public class QuestionController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<QuestionsDto>> getAllQuestions() {
         List<QuestionsDto> allQuestions = questionService.getAllQuestions();
         if (!allQuestions.isEmpty()) {
-            return new ResponseEntity<List<QuestionsDto>>(allQuestions, HttpStatus.FOUND);
+            return new ResponseEntity<List<QuestionsDto>>(allQuestions, HttpStatus.OK);
         }
         Logger.getLogger("No Question found");
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

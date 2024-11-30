@@ -84,7 +84,7 @@ export const Question: React.FC<QuestionProps> = ({
                 className="flex items-center gap-1"
               >
                 <MessageCircle className="w-4 h-4" />
-                {question.answers.length} Answers
+                {question.answers?.length} Answers
               </Button>
             </div>
           </div>
@@ -97,7 +97,7 @@ export const Question: React.FC<QuestionProps> = ({
         <div className="ml-8 space-y-4">
           {" "}
           {/* Add margin-left for indentation */}
-          {question.answers.map((answer) => (
+          {question.answers?.map((answer) => (
             <Answer
               key={answer.id}
               answer={answer}

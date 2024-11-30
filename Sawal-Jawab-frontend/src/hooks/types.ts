@@ -38,3 +38,9 @@ export interface LoginData {
     userName: string;
     password: string;
 }
+
+export interface QuestionPayload {
+    title: string;
+    content: string;
+  }
+  
