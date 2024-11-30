@@ -13,7 +13,11 @@ Sawal-Jawab is a question-and-answer platform where users can:
 
 ## Getting Started
 
-### You can check the backend service live at: https://amusing-bravery-production.up.railway.app/
+### You can check the backend service live at: 
+https://amusing-bravery-production.up.railway.app/
+
+### Postman Collection here:
+https://www.postman.com/docking-module-cosmonaut-51576673/workspace/sawal-jawab-workspace
 
 ## Tech Stack
 
