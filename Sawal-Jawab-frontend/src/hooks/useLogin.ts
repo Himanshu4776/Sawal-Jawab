@@ -26,24 +26,25 @@ export const useLogin = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: loginData.email,
+          userName: loginData.userName,
           password: loginData.password
         }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
+        const errorData = await response.json();
+        throw new Error(errorData.details || 'Login failed');
       }
+      const data = await response.text();
 
       // Store JWT token in localStorage
-      localStorage.setItem('token', data.token);
+      localStorage.setItem('token', data);
+      localStorage.setItem('username', loginData.userName);
       
       return {
         success: true,
         message: 'Login successful',
-        token: data.token
+        token: data
       };
 
     } catch (err) {
@@ -57,8 +58,7 @@ export const useLogin = () => {
       setIsLoading(false);
     }
   };
-
-  const handleLogin = async (
+  const handleLoginSubmit = async (
     loginData: LoginData,
     setCurrentUser: (user: any) => void,
     setShowLoginModal: (show: boolean) => void,
@@ -67,7 +67,7 @@ export const useLogin = () => {
   ) => {
     setLoginError('');
     
-    if (!loginData.email || !loginData.password) {
+    if (!loginData.userName || !loginData.password) {
       setLoginError('Please fill in all fields');
       toast({
         variant: "destructive",
@@ -81,12 +81,12 @@ export const useLogin = () => {
     
     if(response && response.success) {
       setCurrentUser({
-        email: loginData.email,
-        username: loginData.email.split('@')[0]
+        userName: loginData.userName,
+        username: loginData.userName
       });
       setShowLoginModal(false);
       setLoginData({
-        email: '',
+        userName: '',
         password: ''
       });
       toast({
@@ -105,7 +105,7 @@ export const useLogin = () => {
 
   return {
     login,
-    handleLogin,
+    handleLoginSubmit,
     isLoading,
     error
   };

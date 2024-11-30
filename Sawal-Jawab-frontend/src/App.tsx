@@ -10,6 +10,7 @@ import { NoResults } from './components/NoResults';
 import { useRegister } from './hooks/useRegister';
 import { LoginData, QuestionData, RegisterData, User } from './hooks/types';
 import { Toaster } from './components/ui/toaster';
+import { useLogin } from './hooks/useLogin';
 
 export default function App() {
   const [questions, setQuestions] = useState<QuestionData[]>([]);
@@ -21,27 +22,25 @@ export default function App() {
     [key: number]: boolean;
   }>({});
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [loginData, setLoginData] = useState<LoginData>({ email: '', password: '' });
+  const [loginData, setLoginData] = useState<LoginData>({ userName: '', password: '' });
   const [registerData, setRegisterData] = useState<RegisterData>({username: '',email: '',password: '',confirmPassword: ''});
   const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
   const [showRegisterModal, setShowRegisterModal] = useState<boolean>(false);
   const [loginError, setLoginError] = useState<string>('');
   const [registerError, setRegisterError] = useState<string>('');
   const [filteredQuestions, setFilteredQuestions] = useState<QuestionData[]>([]);
+
   const { handleRegister: handleRegisterSubmit } = useRegister();
+  const { handleLoginSubmit: handleLoginSubmit } = useLogin();
 
   const handleLogin = () => {
-    setLoginError('');
-    if (!loginData.email || !loginData.password) {
-      setLoginError('Please fill in all fields');
-      return;
-    }
-    setCurrentUser({
-      username: loginData.email.split('@')[0],
-      email: loginData.email,
-    });
-    setShowLoginModal(false);
-    setLoginData({ email: '', password: '' });
+    handleLoginSubmit(
+      loginData,
+      setCurrentUser,
+      setShowLoginModal,
+      setLoginData,
+      setLoginError
+    );
   };
 
   const handleRegister = () => {
@@ -55,6 +54,12 @@ export default function App() {
 
   const handleLogout = () => {
     setCurrentUser(null);
+    removeLocalStorageItems();
+  };
+
+  const removeLocalStorageItems = () => {
+    localStorage.removeItem('username');
+    localStorage.removeItem('token');
   };
 
   const filterQuestions = (filter: string) => {
@@ -180,7 +185,6 @@ export default function App() {
         />
       </div>
       <div className="flex my-4">
-        {/* Side Menu */}
         <SideMenu
           currentUser={currentUser}
           handleLogout={handleLogout}

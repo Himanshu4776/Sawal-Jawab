@@ -33,8 +33,8 @@ interface HeaderProps {
   setShowLoginModal: (show: boolean) => void;
   showRegisterModal: boolean;
   setShowRegisterModal: (show: boolean) => void;
-  loginData: { email: string; password: string };
-  setLoginData: React.Dispatch<React.SetStateAction<{ email: string; password: string }>>;
+  loginData: { userName: string; password: string };
+  setLoginData: React.Dispatch<React.SetStateAction<{ userName: string; password: string }>>;
   registerData: RegisterData;
   setRegisterData: React.Dispatch<React.SetStateAction<RegisterData>>;
   handleLogin: () => void;

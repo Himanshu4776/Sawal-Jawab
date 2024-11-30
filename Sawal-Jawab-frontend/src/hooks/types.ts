@@ -35,6 +35,6 @@ export interface RegisterData {
 }
 
 export interface LoginData {
-    email: string;
+    userName: string;
     password: string;
 }

@@ -12,8 +12,8 @@ import { Label } from '@/components/ui/label';
 interface LoginProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
-  loginData: { email: string; password: string };
-  setLoginData: (data: { email: string; password: string }) => void;
+  loginData: { userName: string; password: string };
+  setLoginData: (data: { userName: string; password: string }) => void;
   handleLogin: () => void;
   loginError: string | null;
 }
@@ -37,13 +37,13 @@ export default function Login({
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Username</Label>
             <Input
-              id="email"
-              type="email"
-              value={loginData.email}
+              id="userName"
+              type="text"
+              value={loginData.userName}
               onChange={(e) =>
-                setLoginData({ ...loginData, email: e.target.value })
+                setLoginData({ ...loginData, userName: e.target.value })
               }
             />
           </div>
